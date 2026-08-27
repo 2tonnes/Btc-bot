@@ -172,7 +172,9 @@ async def run_cycle():
     else:
         log.append("No signal, no open position. No action.")
 
-    return "\n".join(log)
+    for line in log:
+        print(line)
+    return "OK"
 
 
 @app.route('/run')
