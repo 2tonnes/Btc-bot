@@ -40,7 +40,7 @@ MAX_ADDS = 2
 async def get_account_and_connection():
     api = MetaApi(METAAPI_TOKEN)
     account = await api.metatrader_account_api.get_account(ACCOUNT_ID)
-    if account.state != 'DEPLOYED':
+    if account.state not in ('DEPLOYED', 'DEPLOYING'):
         await account.deploy()
     await account.wait_connected()
     connection = account.get_rpc_connection()
