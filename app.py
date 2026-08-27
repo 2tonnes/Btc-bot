@@ -2,6 +2,7 @@ import os
 import asyncio
 import pandas as pd
 import numpy as np
+import threading 
 from datetime import datetime, timezone
 from flask import Flask
 from metaapi_cloud_sdk import MetaApi
@@ -177,10 +178,17 @@ async def run_cycle():
     return "OK"
 
 
+def run_cycle_background():
+    try:
+        asyncio.run(run_cycle())
+    except Exception as e:
+        print(f"Background run_cycle error: {e}")
+
 @app.route('/run')
 def trigger():
-    result = asyncio.run(run_cycle())
-    return result, 200
+    thread = threading.Thread(target=run_cycle_background)
+    thread.start()
+    return "Cycle started", 200
 
 
 @app.route('/')
