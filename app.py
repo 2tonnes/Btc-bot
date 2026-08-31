@@ -71,9 +71,11 @@ def generate_signal(df):
     df['atr'] = tr.rolling(ATR_LEN).mean()
 
     delta = df['close'].diff()
-    gain = delta.clip(lower=0).rolling(RSI_LEN).mean()
-    loss = (-delta.clip(upper=0)).rolling(RSI_LEN).mean()
-    df['rsi2'] = 100 - (100 / (1 + gain / loss))
+    gain = delta.clip(lower=0)
+    loss = -delta.clip(upper=0)
+    avg_gain = gain.ewm(alpha=1/RSI_LEN, min_periods=RSI_LEN, adjust=False).mean()
+    avg_loss = loss.ewm(alpha=1/RSI_LEN, min_periods=RSI_LEN, adjust=False).mean()
+    df['rsi2'] = 100 - (100 / (1 + avg_gain / avg_loss))
 
     df['sma200'] = df['close'].rolling(TREND_LEN).mean()
     df['prior_high'] = df['high'].rolling(LOOKBACK).max().shift(1)
